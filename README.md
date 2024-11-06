@@ -1,3 +1,5 @@
+# blog_app_codeIgniter_redis
+simple usage of redis in CodeIgniter
 # CodeIgniter 4 Application Blog App
 
 Step 1: Set Up Project and Install Predis
