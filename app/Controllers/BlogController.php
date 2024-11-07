@@ -8,29 +8,44 @@ use Predis\Client as RedisClient;
 class BlogController extends Controller
 {
     protected $redis;
-    protected $cacheDuration = 300; // Cache duration in seconds (e.g., 5 minutes)
+    protected $cacheDuration = 3000; // Cache duration in seconds (e.g., 5 minutes)
 
     public function __construct()
     {
         // Initialize Redis connection
         $this->redis = new RedisClient([
+            // 'scheme' => 'tcp',
+            // 'host'   => 'redis-14624.c283.us-east-1-4.ec2.redns.redis-cloud.com',
+            // 'port'   => 14624,
+            // 'password' => 'E3808ySSX0GJPzFbg2WdVIIFjiFaFzmW',
+
+            // using local redis. 
             'scheme' => 'tcp',
-            'host'   => 'redis-14624.c283.us-east-1-4.ec2.redns.redis-cloud.com',
-            'port'   => 14624,
-            'password' => 'E3808ySSX0GJPzFbg2WdVIIFjiFaFzmW',
+            'host'   => '127.0.0.1',
+            'port'   => 6379,
+            'password' => '',
         ]);
     }
 
     // Display list of all blog posts
     public function index()
     {
+        // Retrieve all keys that match a specific pattern (e.g., all keys)
+        $keys = $this->redis->keys('*');
+
+        // Iterate over each key and display its value
+        foreach ($keys as $key) {
+            $value = $this->redis->get($key); // Get the value for each key
+            echo "Key: $key, Value: " . $value . "<br>";
+        }
+
         $cacheKey = 'all_posts';
         
         try {
             // Check Redis for cached posts
             if ($this->redis->exists($cacheKey)) {
                 $posts = json_decode($this->redis->get($cacheKey), true);
-                echo "Data from Redis cache";
+                echo "SHowing Data from Redis cache";
             } else {
                 // Retrieve posts from MySQL if not cached
                 $db = \Config\Database::connect();
@@ -47,7 +62,7 @@ class BlogController extends Controller
             $db = \Config\Database::connect();
             $query = $db->query("SELECT * FROM posts ORDER BY created_at DESC");
             $posts = $query->getResultArray();
-            echo "Data from MYSQL, Redis can't be accessed";
+            echo "Showing Data from MYSQL, Redis can't be accessed";
         }
 
         return view('posts', ['posts' => $posts]);
