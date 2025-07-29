@@ -9,3 +9,6 @@ Create a New CodeIgniter Project:
 composer create-project codeigniter4/appstarter redis_blog
 cd redis_blog
 ```
+
+##### misc
+![visitors](https://visitor-badge.laobi.icu/badge?page_id=AzwadFawadHasan.blog_app_codeIgniter_redis)
